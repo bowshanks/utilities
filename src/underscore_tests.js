@@ -113,8 +113,13 @@ var _ = { };
   // Calls the method named by methodName on each value in the list.
   _.invoke = function(list, methodName, args) {
     for (var i = 0; i < list.length; i++){
-      console.log(list[i][methodName]);
-      list[i][methodName].apply(list[i],args);
+      if (typeof methodName === "function") {
+        methodName.apply(list[i],args)
+      }
+      else {
+        list[i][methodName].apply(list[i],args);
+      }
+
     }
     return list;
   };
@@ -179,11 +184,27 @@ var _ = { };
   // Extend a given object with all the properties of the passed in
   // object(s).
   _.extend = function(obj) {
+    var source = Array.prototype.slice.call(arguments,1);
+    for (var index in source){
+      for (var key in source[index]){
+        obj[key] = source[index][key];
+      }
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var source = Array.prototype.slice.call(arguments,1);
+    for (var index in source){
+      for (var key in source[index]){
+        if (!(key in obj)){
+          obj[key] = source[index][key];
+        }
+      }
+    }
+    return obj;
   };
 
 
@@ -195,6 +216,16 @@ var _ = { };
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
+        var i = 0;
+        var x;
+        if (i === 0){
+        	x = func();
+        	return x;
+        }
+        else {
+        	return x;
+        }
+        i = 1;
   };
 
   // Memoize an expensive function by storing its results. You may assume
